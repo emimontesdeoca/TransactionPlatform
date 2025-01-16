@@ -1,4 +1,9 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Hosting;
+using TransactionPlatform.Models;
 
 namespace TransactionPlatform.Client
 {
@@ -6,12 +11,7 @@ namespace TransactionPlatform.Client
     {
         private readonly HttpClient _client;
         private readonly string _apiUrl = "/transactions";
-        private readonly int _numberOfRequests = 4000;
-        private readonly int _numberOfIterations = 100;
-        private readonly List<Task> _tasks = new List<Task>();
-        private Timer _timer;
-
-        public ConcurrentBag<Transaction> Transactions { get; } = new ConcurrentBag<Transaction>();
+        private CancellationTokenSource _cts;
 
         public BackgroundTaskService(HttpClient client)
         {
@@ -20,87 +20,58 @@ namespace TransactionPlatform.Client
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            // Run the background task every 5 seconds
-            while (true)
-            {
-                SendRequestsAsync().Wait();
-            }
+            _cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            Task.Run(() => SendRequestsAsync(_cts.Token), _cts.Token);
+            return Task.CompletedTask;
         }
 
-        private void DoWork(object state)
+        private async Task SendRequestsAsync(CancellationToken cancellationToken)
         {
-            //for (int iteration = 1; iteration <= _numberOfIterations; iteration++)
-            //{
-            //    Console.WriteLine($"Iteration {iteration} started...");
-            //    SendRequestsAsync().Wait();
-            //    Console.WriteLine($"Iteration {iteration} completed.");
-            //}
-
-            while (true)
-            {
-                SendRequestsAsync().Wait();
-            }
-
-            Console.WriteLine("All iterations completed.");
-        }
-
-        private async Task SendRequestsAsync()
-        {
-            _tasks.Clear();
             var random = new Random();
 
-            // Create 4000 tasks to send POST requests in parallel
-            for (int i = 0; i < random.Next(1000, _numberOfRequests); i++)
+            while (!cancellationToken.IsCancellationRequested)
             {
+                var financed = random.Next(2) == 0;
+
                 var transaction = new Transaction
                 {
-                    Amount = random.Next(1, 1000),
-                    When = DateTime.UtcNow,
-                    Where = $"Location {i}",
-                    Who = $"Person {i}",
-                    Shop = $"Shop {i}"
+                    Id = random.Next(),
+                    CreatedIn = random.Next(1, 10),
+                    ShopId = random.Next(1, 15),
+                    CreatedAt = DateTime.UtcNow,
+                    Items = new List<Item>(),
+                    PaymentTypeId = random.Next(0, 1),
+                    Financed = financed,
+                    FinancedMonths = financed ? random.Next(1, 24) : -1
                 };
 
-                _tasks.Add(SendPostRequestAsync(transaction));
-            }
+                var itemsRandom = random.Next(1, 3);
 
-            // Wait for all tasks to complete
-            await Task.WhenAll(_tasks);
-        }
+                for (int i = 0; i < itemsRandom; i++)
+                {
+                    var item = new Item { ItemId = random.Next(1, 15), Amount = random.Next(1, 2) };
 
-        private async Task SendPostRequestAsync(Transaction transaction)
-        {
-            try
-            {
-                // Send POST request
-                HttpResponseMessage response = await _client.PostAsJsonAsync(_apiUrl, transaction);
+                    transaction.Items.Add(item);
+                }
 
-                // Log response (optional)
-                //if (response.IsSuccessStatusCode)
-                //{
-                //    Console.WriteLine($"Transaction posted successfully: {transaction}");
-                //}
-                //else
-                //{
-                //    Console.WriteLine($"Failed to post transaction: {transaction}");
-                //}
-            }
-            catch (Exception ex)
-            {
-                // Handle any errors
-                Console.WriteLine($"Request failed: {ex.Message}");
+                try
+                {
+                    HttpResponseMessage response = await _client.PostAsJsonAsync(_apiUrl, transaction, cancellationToken);
+                    response.EnsureSuccessStatusCode();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Request failed: {ex.Message}");
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(random.Next(1, 3)), cancellationToken);
             }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            _timer?.Change(Timeout.Infinite, 0);
+            _cts?.Cancel();
             return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            _timer?.Dispose();
         }
     }
 }

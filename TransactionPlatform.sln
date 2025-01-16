@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35507.96 d17.13
+VisualStudioVersion = 17.13.35507.96
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionPlatform.AppHost", "TransactionPlatform.AppHost\TransactionPlatform.AppHost.csproj", "{892595FC-8022-432A-801E-A557AE929D00}"
 EndProject
@@ -9,6 +9,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionPlatform.ApiService", "TransactionPlatform.ApiService\TransactionPlatform.ApiService.csproj", "{2922E2FF-1962-D794-DCEB-E60F4AE43FD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionPlatform.Client", "TransactionPlatform.Client\TransactionPlatform.Client.csproj", "{067FA952-DAF2-9BB4-31B6-BF8BB92C1FB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionPlatform.Models", "TransactionPlatform.Models\TransactionPlatform.Models.csproj", "{60A918ED-B5DB-42B3-BFB6-34A5789E8ED9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{067FA952-DAF2-9BB4-31B6-BF8BB92C1FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{067FA952-DAF2-9BB4-31B6-BF8BB92C1FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{067FA952-DAF2-9BB4-31B6-BF8BB92C1FB2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60A918ED-B5DB-42B3-BFB6-34A5789E8ED9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60A918ED-B5DB-42B3-BFB6-34A5789E8ED9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60A918ED-B5DB-42B3-BFB6-34A5789E8ED9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60A918ED-B5DB-42B3-BFB6-34A5789E8ED9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

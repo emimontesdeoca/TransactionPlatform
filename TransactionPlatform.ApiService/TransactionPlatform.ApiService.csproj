@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TransactionPlatform.Models\TransactionPlatform.Models.csproj" />
     <ProjectReference Include="..\TransactionPlatform.ServiceDefaults\TransactionPlatform.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Azure.Messaging.ServiceBus" Version="7.18.2" />
   </ItemGroup>
 
 </Project>

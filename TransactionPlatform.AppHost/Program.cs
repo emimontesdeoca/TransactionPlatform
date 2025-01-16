@@ -1,11 +1,9 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
-var apiService = builder.AddProject<Projects.TransactionPlatform_ApiService>("apiservice")
-    .WithReplicas(4);
+var apiService = builder.AddProject<Projects.TransactionPlatform_ApiService>("apiservice");
 
 builder.AddProject<Projects.TransactionPlatform_Client>("transactionplatform-client")
     .WithReference(apiService)
-    .WaitFor(apiService)
-    .WithReplicas(5);
+    .WaitFor(apiService);
 
 builder.Build().Run();
